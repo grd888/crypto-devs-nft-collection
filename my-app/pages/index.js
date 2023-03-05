@@ -43,13 +43,13 @@ export default function Home() {
       const tx = await nftContract.presaleMint({
         // value signifies the cost of one crypto dev which is "0.0001" eth.
         // We are parsing `0.0001` string to ether using the utils library from ethers.js
-        value: utils.parseEther("0.0001"),
+        value: utils.parseEther('0.0001'),
       });
       setLoading(true);
       // wait for the transaction to get mined
       await tx.wait();
       setLoading(false);
-      window.alert("You successfully minted a Crypto Dev!");
+      window.alert('You successfully minted a Crypto Dev!');
     } catch (err) {
       console.error(err);
     }
@@ -69,13 +69,13 @@ export default function Home() {
       const tx = await nftContract.mint({
         // value signifies the cost of one crypto dev which is "0.0001" eth.
         // We are parsing `0.0001` string to ether using the utils library from ethers.js
-        value: utils.parseEther("0.0001"),
+        value: utils.parseEther('0.0001'),
       });
       setLoading(true);
       // wait for the transaction to get mined
       await tx.wait();
       setLoading(false);
-      window.alert("You successfully minted a Crypto Dev!");
+      window.alert('You successfully minted a Crypto Dev!');
     } catch (err) {
       console.error(err);
     }
@@ -143,7 +143,6 @@ export default function Home() {
     }
   }, []);
 
-
   /**
    * checkIfPresaleStarted: checks if the presale has started by querying the `presaleStarted`
    * variable in the contract
@@ -200,7 +199,6 @@ export default function Home() {
     }
   }, []);
 
-  
   /**
    * getTokenIdsMinted: gets the number of tokenIds that have been minted
    */
@@ -242,8 +240,8 @@ export default function Home() {
     // If user is not connected to the Goerli network, let them know and throw an error
     const { chainId } = await web3Provider.getNetwork();
     if (chainId !== 5) {
-      window.alert("Change the network to Goerli");
-      throw new Error("Change network to Goerli");
+      window.alert('Change the network to Goerli');
+      throw new Error('Change network to Goerli');
     }
 
     if (needSigner) {
@@ -292,7 +290,13 @@ export default function Home() {
         await getTokenIdsMinted();
       }, 5 * 1000);
     }
-  }, [walletConnected, checkIfPresaleStarted, connectWallet, getTokenIdsMinted, checkIfPresaleEnded]);
+  }, [
+    walletConnected,
+    checkIfPresaleStarted,
+    connectWallet,
+    getTokenIdsMinted,
+    checkIfPresaleEnded,
+  ]);
 
   /*
       renderButton: Returns a button based on the state of the dapp
@@ -384,11 +388,11 @@ export default function Home() {
             priority
           />
         </div>
+        
       </div>
-
       <footer className={styles.footer}>
-        Made with &#10084; by Crypto Devs
-      </footer>
+          Made with &#10084; by Crypto Devs
+        </footer>
     </>
   );
 }
