@@ -12,6 +12,18 @@ contract CryptoDevs is ERC721Enumerable, Ownable {
      */
     string _baseTokenURI;
 
+    //  _price is the price of one Crypto Dev NFT
+    uint256 public _price = 0.0001 ether;
+
+    // _paused is used to pause the contract in case of an emergency
+    bool public _paused;
+
+    // max number of CryptoDevs
+    uint256 public maxTokenIds = 20;
+
+    // total number of tokenIds minted
+    uint256 public tokenIds;
+
     // Whitelist contract instance
     IWhitelist whitelist;
 
@@ -20,6 +32,11 @@ contract CryptoDevs is ERC721Enumerable, Ownable {
 
     // timestamp for when presale would end
     uint256 public presaleEnded;
+
+    modifier onlyWhenNotPaused() {
+        require(!_paused, "Contract currently paused");
+        _;
+    }
 
     /**
      * @dev ERC721 constructor takes in a `name` and a `symbol` to the token collection.
@@ -36,12 +53,33 @@ contract CryptoDevs is ERC721Enumerable, Ownable {
     }
 
     /**
-    * @dev startPresale starts a presale for the whitelisted addresses
-      */
+     * @dev startPresale starts a presale for the whitelisted addresses
+     */
     function startPresale() public onlyOwner {
         presaleStarted = true;
         // Set presaleEnded time as current timestamp + 2 days
         // Solidity has cool syntax for timestamps (seconds, minutes, hours, days, years)
         presaleEnded = block.timestamp + 2 days;
+    }
+
+    /**
+     * @dev presaleMint allows a user to mint one NFT per transaction during the presale.
+     */
+    function presaleMint() public payable onlyWhenNotPaused {
+        require(
+            presaleStarted && block.timestamp < presaleEnded,
+            "Presale is not running"
+        );
+        require(
+            whitelist.whitelistedAddresses(msg.sender),
+            "You are not whitelisted"
+        );
+        require(tokenIds < maxTokenIds, "Exceeded maximum Crypto Devs supply");
+        require(msg.value >= _price, "Insufficient Ether sent");
+        tokenIds += 1;
+        //_safeMint is a safer version of the _mint function as it ensures that
+        // if the address being minted to is a contract, then it knows how to deal with ERC721 tokens
+        // If the address being minted to is not a contract, it works the same way as _mint
+        _safeMint(msg.sender, tokenIds);
     }
 }
