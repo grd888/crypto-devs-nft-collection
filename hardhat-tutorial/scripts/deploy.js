@@ -37,3 +37,4 @@ main().catch((error) => {
 });
 
 // deployed: 0xE841890Da6254baBEB3E91FC0B5B16aFdF752210
+// opensea: https://testnets.opensea.io/assets/goerli/0xE841890Da6254baBEB3E91FC0B5B16aFdF752210
