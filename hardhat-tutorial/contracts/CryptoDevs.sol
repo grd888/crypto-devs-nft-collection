@@ -82,4 +82,18 @@ contract CryptoDevs is ERC721Enumerable, Ownable {
         // If the address being minted to is not a contract, it works the same way as _mint
         _safeMint(msg.sender, tokenIds);
     }
+
+    /**
+     * @dev mint allows a user to mint 1 NFT per transaction after the presale has ended.
+     */
+    function mint() public payable onlyWhenNotPaused {
+        require(
+            presaleStarted && block.timestamp >= presaleEnded,
+            "Presale has not ended yet"
+        );
+        require(tokenIds < maxTokenIds, "Exceed maximum Crypto Devs supply");
+        require(msg.value >= _price, "Insufficient Ether sent");
+        tokenIds += 1;
+        _safeMint(msg.sender, tokenIds);
+    }
 }
