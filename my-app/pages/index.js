@@ -8,8 +8,86 @@ import { abi, NFT_CONTRACT_ADDRESS } from '../constants';
 import styles from '../styles/Home.module.css';
 
 export default function Home() {
+  // walletConnected keep track of whether the user's wallet is connected or not
+  const [walletConnected, setWalletConnected] = useState(false);
+
   // tokenIdsMinted keeps track of the number of tokenIds that have been minted
   const [tokenIdsMinted, setTokenIdsMinted] = useState('0');
+
+  /*
+      connectWallet: Connects the MetaMask wallet
+    */
+  const connectWallet = async () => {
+    try {
+      // Get the provider from web3Modal, which in our case is MetaMask
+      // When used for the first time, it prompts the user to connect their wallet
+      await getProviderOrSigner();
+      setWalletConnected(true);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  /*
+      renderButton: Returns a button based on the state of the dapp
+    */
+  const renderButton = () => {
+    // If wallet is not connected, return a button which allows them to connect their wallet
+    if (!walletConnected) {
+      return (
+        <button onClick={connectWallet} className={styles.button}>
+          Connect your wallet
+        </button>
+      );
+    }
+
+    // If we are currently waiting for something, return a loading button
+    if (loading) {
+      return <button className={styles.button}>Loading...</button>;
+    }
+
+    // If connected user is the owner, and presale hasn't started yet, allow them to start the presale
+    if (isOwner && !presaleStarted) {
+      return (
+        <button className={styles.button} onClick={startPresale}>
+          Start Presale!
+        </button>
+      );
+    }
+
+    // If connected user is not the owner but presale hasn't started yet, tell them that
+    if (!presaleStarted) {
+      return (
+        <div>
+          <div className={styles.description}>Presale hasn&#39;t started!</div>
+        </div>
+      );
+    }
+
+    // If presale started, but hasn't ended yet, allow for minting during the presale period
+    if (presaleStarted && !presaleEnded) {
+      return (
+        <div>
+          <div className={styles.description}>
+            Presale has started!!! If your address is whitelisted, Mint a Crypto
+            Dev 🥳
+          </div>
+          <button className={styles.button} onClick={presaleMint}>
+            Presale Mint 🚀
+          </button>
+        </div>
+      );
+    }
+
+    // If presale started and has ended, it's time for public minting
+    if (presaleStarted && presaleEnded) {
+      return (
+        <button className={styles.button} onClick={publicMint}>
+          Public Mint 🚀
+        </button>
+      );
+    }
+  };
 
   return (
     <>
@@ -28,7 +106,7 @@ export default function Home() {
           <div className={styles.description}>
             {tokenIdsMinted}/20 have been minted
           </div>
-          {/* {renderButton()} */}
+          {renderButton()}
         </div>
         <div>
           <Image
